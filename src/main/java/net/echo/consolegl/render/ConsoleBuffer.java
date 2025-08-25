@@ -1,7 +1,6 @@
 package net.echo.consolegl.render;
 
 import net.echo.consolegl.CGL;
-import net.echo.consolegl.api.IRenderStack;
 import net.echo.consolegl.model.Pixel;
 
 import java.awt.*;
@@ -11,6 +10,7 @@ import static net.echo.consolegl.CGL.GLYPHS;
 
 public class ConsoleBuffer {
 
+    private final StringBuilder sb;
     private final Pixel[][] buffer;
     private final int width;
     private final int height;
@@ -20,6 +20,7 @@ public class ConsoleBuffer {
         this.width = width;
         this.height = height;
         this.buffer = new Pixel[height][width];
+        this.sb = new StringBuilder();
 
         fillEmpty(GLYPHS[0]);
     }
@@ -57,7 +58,7 @@ public class ConsoleBuffer {
     }
 
     public String compute() {
-        StringBuilder sb = new StringBuilder();
+        sb.setLength(0);
 
         for (Pixel[] row : buffer) {
             for (Pixel pixel : row) {
@@ -71,8 +72,7 @@ public class ConsoleBuffer {
         return sb.toString();
     }
 
-    public void render(PrintStream out) {
-        String header = "=".repeat(width) + "\r\n";
+    public void render(String header, PrintStream out) {
         String text = header + compute();
 
         out.print("\033[H");
