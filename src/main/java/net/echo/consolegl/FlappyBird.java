@@ -13,8 +13,8 @@ import java.util.Random;
 public class FlappyBird {
     
     private static class Tube {
-        int x; // posizione orizzontale
-        int holeY; // posizione verticale del buco
+        int x;
+        int holeY;
         int holeHeight;
         
         Tube(int x, int holeY, int holeHeight) {
@@ -50,8 +50,6 @@ public class FlappyBird {
         
         double birdY = 0.5;
         double birdVelocity = 0;
-        double stepX = 1.0 / display.getWidth();
-        double stepY = 1.0 / display.getHeight();
         
         int width = display.getWidth();
         int height = display.getHeight();
