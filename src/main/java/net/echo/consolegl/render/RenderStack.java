@@ -21,7 +21,7 @@ public class RenderStack implements AutoCloseable, IRenderStack {
     private final int height;
 
     private char glyph = CGL.GLYPHS[4];
-    private Color color;
+    private Color color = Color.WHITE;
 
     public RenderStack(ConsoleBuffer buffer, int mode, int width, int height) {
         this.buffer = buffer;
@@ -73,7 +73,7 @@ public class RenderStack implements AutoCloseable, IRenderStack {
         int scaledWidth = (int) (x * width);
         int scaledHeight = (int) (y * height);
 
-        vertices.add(new Vertex2D(scaledWidth, scaledHeight, color));
+        vertices.add(new Vertex2D(scaledWidth, scaledHeight, glyph, color));
     }
 
     @Override
@@ -132,7 +132,7 @@ public class RenderStack implements AutoCloseable, IRenderStack {
             case CGL.POINTS -> {
                 for (Vertex2D vertex2D : vertices) {
                     Pixel pixel = arrayBuffer[vertex2D.y()][vertex2D.x()];
-                    pixel.setGlyph(glyph);
+                    pixel.setGlyph(vertex2D.glyph());
                     pixel.setColor(vertex2D.color());
                 }
             }
@@ -141,7 +141,7 @@ public class RenderStack implements AutoCloseable, IRenderStack {
                     Vertex2D a = vertices.get(i);
                     Vertex2D b = vertices.get(i + 1);
 
-                    CGL.rasterizeLine(arrayBuffer, glyph, a, b);
+                    CGL.rasterizeLine(arrayBuffer, a, b);
                 }
             }
             case CGL.LINE_LOOP -> {
@@ -150,11 +150,11 @@ public class RenderStack implements AutoCloseable, IRenderStack {
                 for (int i = 1; i < vertices.size(); i += 1) {
                     Vertex2D a = vertices.get(i);
 
-                    CGL.rasterizeLine(arrayBuffer, glyph, a, lastVertex2D);
+                    CGL.rasterizeLine(arrayBuffer, a, lastVertex2D);
                     lastVertex2D = a;
                 }
 
-                CGL.rasterizeLine(arrayBuffer, glyph, lastVertex2D, vertices.getFirst());
+                CGL.rasterizeLine(arrayBuffer, lastVertex2D, vertices.getFirst());
             }
             case CGL.LINE_STRIP -> {
                 Vertex2D lastVertex2D = vertices.getFirst();
@@ -162,7 +162,7 @@ public class RenderStack implements AutoCloseable, IRenderStack {
                 for (int i = 1; i < vertices.size(); i += 1) {
                     Vertex2D a = vertices.get(i);
 
-                    CGL.rasterizeLine(arrayBuffer, glyph, a, lastVertex2D);
+                    CGL.rasterizeLine(arrayBuffer, a, lastVertex2D);
                     lastVertex2D = a;
                 }
             }
@@ -172,7 +172,7 @@ public class RenderStack implements AutoCloseable, IRenderStack {
                     Vertex2D b = vertices.get(i+1);
                     Vertex2D c = vertices.get(i+2);
 
-                    CGL.rasterizeTriangle(arrayBuffer, glyph, height, width, a, b, c);
+                    CGL.rasterizeTriangle(arrayBuffer, height, width, a, b, c);
                 }
             }
             case CGL.QUADS -> {
@@ -182,8 +182,8 @@ public class RenderStack implements AutoCloseable, IRenderStack {
                     Vertex2D c = vertices.get(i + 2);
                     Vertex2D d = vertices.get(i + 3);
 
-                    CGL.rasterizeTriangle(arrayBuffer, glyph, height, width, a, b, c);
-                    CGL.rasterizeTriangle(arrayBuffer, glyph, height, width, a, c, d);
+                    CGL.rasterizeTriangle(arrayBuffer, height, width, a, b, c);
+                    CGL.rasterizeTriangle(arrayBuffer, height, width, a, c, d);
                 }
             }
             default -> throw new IllegalStateException("Unexpected value: " + drawMode);

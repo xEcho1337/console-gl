@@ -59,7 +59,7 @@ public class CGL {
         return new Vertex3D(x, y, v.z());
     }
 
-    public static void rasterizeLine(Pixel[][] buffer, char value, Vertex2D a, Vertex2D b) {
+    public static void rasterizeLine(Pixel[][] buffer, Vertex2D a, Vertex2D b) {
         int x0 = a.x();
         int y0 = a.y();
         int x1 = b.x();
@@ -74,7 +74,7 @@ public class CGL {
 
         while (true) {
             Pixel pixel = buffer[y0][x0];
-            pixel.setGlyph(value);
+            pixel.setGlyph(a.glyph());
             pixel.setColor(a.color());
 
             if (x0 == x1 && y0 == y1) break;
@@ -93,14 +93,14 @@ public class CGL {
         }
     }
 
-    public static void rasterizeTriangle(Pixel[][] buffer, char value, int height, int width, Vertex2D a, Vertex2D b, Vertex2D c) {
+    public static void rasterizeTriangle(Pixel[][] buffer, int height, int width, Vertex2D a, Vertex2D b, Vertex2D c) {
         IntStream.range(0, width * height)
             .parallel()
             .forEach(i -> {
                 int y = i / width;
                 int x = i % width;
 
-                Vertex2D P = new Vertex2D(x, y, null);
+                Vertex2D P = new Vertex2D(x, y, ' ', null);
 
                 float w0 = edgeFunction(b, c, P);
                 float w1 = edgeFunction(c, a, P);
@@ -111,7 +111,7 @@ public class CGL {
 
                 if (allPositive || allNegative) {
                     Pixel pixel = buffer[y][x];
-                    pixel.setGlyph(value);
+                    pixel.setGlyph(a.glyph());
                     pixel.setColor(a.color());
                 }
             });
