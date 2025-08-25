@@ -64,7 +64,10 @@ public class RenderStack implements AutoCloseable, IRenderStack {
     @Override
     public void vertex(double x, double y) {
         if (x > 1 || x < 0 || y > 1 || y < 0) {
-            throw new IllegalArgumentException("X and Y must be between 0 and 1! Got " + x + ", " + y);
+            switch (CGL.getVertexPolicy()) {
+                case ERROR -> throw new IllegalArgumentException("X and Y must be between 0 and 1! Got " + x + ", " + y);
+                case IGNORE -> { return; }
+            }
         }
 
         int scaledWidth = (int) (x * width);

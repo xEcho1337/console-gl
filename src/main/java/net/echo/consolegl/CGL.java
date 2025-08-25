@@ -3,6 +3,7 @@ package net.echo.consolegl;
 import net.echo.consolegl.model.Pixel;
 import net.echo.consolegl.model.Vertex2D;
 import net.echo.consolegl.model.Vertex3D;
+import net.echo.consolegl.model.VertexPolicy;
 
 import java.util.stream.IntStream;
 
@@ -16,6 +17,15 @@ public class CGL {
     public static final int TRIANGLES = 4;
     public static final int QUADS = 5;
     public static final String RESET = "\033[0m";
+    private static VertexPolicy vertexPolicy = VertexPolicy.IGNORE;
+
+    public static VertexPolicy getVertexPolicy() {
+        return vertexPolicy;
+    }
+
+    public static void setVertexPolicy(VertexPolicy vertexPolicy) {
+        CGL.vertexPolicy = vertexPolicy;
+    }
 
     public static Vertex3D translate(Vertex3D v, double tx, double ty, double tz) {
         return new Vertex3D(v.x() + tx, v.y() + ty, v.z() + tz);

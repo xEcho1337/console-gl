@@ -1,6 +1,7 @@
 package net.echo.consolegl;
 
 import net.echo.consolegl.input.Display;
+import net.echo.consolegl.model.VertexPolicy;
 import net.echo.consolegl.render.ConsoleBuffer;
 import net.echo.consolegl.render.RenderStack;
 import net.echo.consolegl.input.Key;
@@ -12,6 +13,7 @@ public class TestWindow {
     }
 
     private void start() throws Exception {
+        CGL.setVertexPolicy(VertexPolicy.IGNORE);
         Display display = new Display(320, 100);
 
         display.setTitle("Test Window");
@@ -96,58 +98,63 @@ public class TestWindow {
         long timestamp = 0;
         double lastFps = 0;
 
-        while (display.isActive()) {
-            i++;
+        try {
+            while (display.isActive()) {
+                i++;
 
-            long start = System.currentTimeMillis();
-            double angle = Math.toRadians(i * 2);
+                long start = System.currentTimeMillis();
+                double angle = Math.toRadians(i * 2);
 
-            ConsoleBuffer frameBuffer = display.getFrameBuffer();
+                ConsoleBuffer frameBuffer = display.getFrameBuffer();
 
-            frameBuffer.clear();
-            display.pollEvents();
+                frameBuffer.clear();
+                display.pollEvents();
 
-            Key key = display.getPressedKey();
+                Key key = display.getPressedKey();
 
-            if (key == Key.ESCAPE) {
-                display.setActive(false);
-                return;
-            }
-
-            try (RenderStack stack = frameBuffer.newStack(CGL.TRIANGLES)) {
-                stack.glyph('#');
-                stack.pushMatrix();
-                stack.translate(0, 0, 1.3);
-                stack.rotateY(angle);
-                stack.rotateX(angle * 0.5);
-
-                for (int f = 0; f < faces.length; f++) {
-                    int faceIndex = f / 2;
-                    stack.color(colors[faceIndex][0], colors[faceIndex][1], colors[faceIndex][2]);
-
-                    int[] tri = faces[f];
-                    stack.vertex(verts[tri[0]][0], verts[tri[0]][1], verts[tri[0]][2]);
-                    stack.vertex(verts[tri[1]][0], verts[tri[1]][1], verts[tri[1]][2]);
-                    stack.vertex(verts[tri[2]][0], verts[tri[2]][1], verts[tri[2]][2]);
+                if (key == Key.ESCAPE) {
+                    display.setActive(false);
+                    return;
                 }
 
-                stack.popMatrix();
+                try (RenderStack stack = frameBuffer.newStack(CGL.TRIANGLES)) {
+                    stack.glyph('#');
+                    stack.pushMatrix();
+                    stack.translate(0, 0, 1.5);
+                    stack.rotateY(angle);
+                    stack.rotateX(angle * 0.5);
+
+                    for (int f = 0; f < faces.length; f++) {
+                        int faceIndex = f / 2;
+                        stack.color(colors[faceIndex][0], colors[faceIndex][1], colors[faceIndex][2]);
+
+                        int[] tri = faces[f];
+                        stack.vertex(verts[tri[0]][0], verts[tri[0]][1], verts[tri[0]][2]);
+                        stack.vertex(verts[tri[1]][0], verts[tri[1]][1], verts[tri[1]][2]);
+                        stack.vertex(verts[tri[2]][0], verts[tri[2]][1], verts[tri[2]][2]);
+                    }
+
+                    stack.popMatrix();
+                }
+
+                if (System.currentTimeMillis() - timestamp > 1000) {
+                    lastFps = (double) timePerFrame / frames;
+                    timePerFrame = 0;
+                    frames = 0;
+                    timestamp = System.currentTimeMillis();
+                }
+
+                display.setTitle("Test Window - FPS: " + String.format("%.2f", lastFps));
+                display.update(System.out);
+
+                long end = System.currentTimeMillis();
+
+                timePerFrame += (end - start);
+                frames++;
             }
-
-            if (System.currentTimeMillis() - timestamp > 1000) {
-                lastFps = (double) timePerFrame / frames;
-                timePerFrame = 0;
-                frames = 0;
-                timestamp = System.currentTimeMillis();
-            }
-
-            display.setTitle("Test Window - FPS: " + String.format("%.2f", lastFps));
-            display.update(System.out);
-
-            long end = System.currentTimeMillis();
-
-            timePerFrame += (end - start);
-            frames++;
+        } catch (Exception e) {
+            display.setActive(false);
+            e.printStackTrace(System.err);
         }
     }
 }
