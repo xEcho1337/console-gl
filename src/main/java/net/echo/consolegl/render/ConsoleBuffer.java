@@ -72,8 +72,8 @@ public class ConsoleBuffer {
         return sb.toString();
     }
 
-    public void render(String header, PrintStream out) {
-        String text = header + compute();
+    public void render(PrintStream out) {
+        String text = compute();
 
         out.print("\033[H");
         out.flush();

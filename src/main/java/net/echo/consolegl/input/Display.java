@@ -58,20 +58,7 @@ public class Display {
     }
 
     public void update(PrintStream out) {
-        StringBuilder builder = new StringBuilder();
-
-        int padding = title.length();
-        int halfPadding = padding / 2 + 1;
-        String top = "=".repeat(width / 2 - halfPadding);
-
-        builder.append(top);
-        builder.append(" ");
-        builder.append(title);
-        builder.append(" ");
-        builder.append(top);
-        builder.append("\r\n");
-
-        frameBuffer.render(builder.toString(), out);
+        frameBuffer.render(out);
         pressedKey = Key.UNKNOWN;
     }
 
@@ -98,9 +85,14 @@ public class Display {
     public String getTitle() {
         return title;
     }
-
+    
     public void setTitle(String title) {
+        setTitle(title, System.out);
+    }
+    
+    public void setTitle(String title, PrintStream out) {
         this.title = title;
+        out.print("\033]0;" + title + "\007");
     }
 
     public Key getLastPressedKey() {

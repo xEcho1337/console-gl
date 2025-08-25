@@ -14,17 +14,17 @@ public class TestWindow {
     }
 
     private void start() throws Exception {
-        Display display = new Display(320, 100);
+        Display display = new Display(320, 86);
 
         display.setTitle("Test Window");
         display.create();
-
+        
         spinningDonut(display);
     }
 
     private void spinningDonut(Display display) {
-        int R1 = 10, R2 = 20, K2 = 30;
-        int distanceFromCamera = 50;
+        int R1 = 2, R2 = 4, K2 = 6;
+        int distanceFromCamera = 15;
 
         double A = 0;
         double B = 0;
@@ -34,9 +34,14 @@ public class TestWindow {
 
         int width = display.getWidth();
         int height = display.getHeight();
-
+        
+        long lastUpdate = 0;
+        int frames = 0;
+        double fps = 0.0;
+        
         try {
             while (display.isActive()) {
+                Thread.sleep(1000 / 120);
                 ConsoleBuffer buffer = display.getFrameBuffer();
                 buffer.clear();
 
@@ -94,6 +99,15 @@ public class TestWindow {
                 A += 0.07;
                 B += 0.03;
 
+                if (System.currentTimeMillis() - lastUpdate > 1000) {
+                    lastUpdate = System.currentTimeMillis();
+                    fps = frames;
+                    frames = 0;
+                }
+                
+                frames++;
+                
+                display.setTitle("Test Window - FPS: " + String.format("%.2f", fps));
                 display.update(System.out);
             }
         } catch (Exception e) {
