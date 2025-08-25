@@ -14,17 +14,18 @@ import java.util.List;
 public class RenderStack implements AutoCloseable, IRenderStack {
 
     private final Deque<IMatrix4> transformStack = new ArrayDeque<>();
+    private final List<Vertex2D> vertices;
     private final ConsoleBuffer buffer;
+    private final int drawMode;
     private final int width;
     private final int height;
-    private final List<Vertex2D> vertices;
 
-    private int drawMode = -1;
-    private char glyph;
+    private char glyph = CGL.GLYPHS[4];
     private Color color;
 
-    public RenderStack(ConsoleBuffer buffer, int width, int height) {
+    public RenderStack(ConsoleBuffer buffer, int mode, int width, int height) {
         this.buffer = buffer;
+        this.drawMode = mode;
         this.width = width;
         this.height = height;
         this.vertices = new ArrayList<>();
@@ -43,11 +44,6 @@ public class RenderStack implements AutoCloseable, IRenderStack {
         }
 
         transformStack.pop();
-    }
-
-    @Override
-    public void begin(int mode) {
-        this.drawMode = mode;
     }
 
     @Override
@@ -176,10 +172,20 @@ public class RenderStack implements AutoCloseable, IRenderStack {
                     CGL.rasterizeTriangle(arrayBuffer, glyph, height, width, a, b, c);
                 }
             }
+            case CGL.QUADS -> {
+                for (int i = 0; i + 3 < vertices.size(); i += 4) {
+                    Vertex2D a = vertices.get(i);
+                    Vertex2D b = vertices.get(i + 1);
+                    Vertex2D c = vertices.get(i + 2);
+                    Vertex2D d = vertices.get(i + 3);
+
+                    CGL.rasterizeTriangle(arrayBuffer, glyph, height, width, a, b, c);
+                    CGL.rasterizeTriangle(arrayBuffer, glyph, height, width, a, c, d);
+                }
+            }
             default -> throw new IllegalStateException("Unexpected value: " + drawMode);
         }
 
         vertices.clear();
-        drawMode = -1;
     }
 }

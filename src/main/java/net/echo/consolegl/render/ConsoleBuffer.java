@@ -80,8 +80,8 @@ public class ConsoleBuffer {
         out.println(text);
     }
 
-    public RenderStack newStack() {
-        return new RenderStack(this, width, height);
+    public RenderStack newStack(int mode) {
+        return new RenderStack(this, mode, width, height);
     }
 
     public void clear() {

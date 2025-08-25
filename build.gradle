@@ -4,3 +4,7 @@ plugins {
 
 group = 'net.echo.consolegl'
 version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}

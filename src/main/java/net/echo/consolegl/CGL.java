@@ -14,6 +14,7 @@ public class CGL {
     public static final int LINE_LOOP = 2;
     public static final int LINE_STRIP = 3;
     public static final int TRIANGLES = 4;
+    public static final int QUADS = 5;
     public static final String RESET = "\033[0m";
 
     public static Vertex3D translate(Vertex3D v, double tx, double ty, double tz) {

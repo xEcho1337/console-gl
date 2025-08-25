@@ -22,13 +22,6 @@ public interface IRenderStack {
     void popMatrix();
 
     /**
-     * Begins a new drawing primitive.
-     *
-     * @param mode The primitive type, e.g., POINTS, LINES, TRIANGLES.
-     */
-    void begin(int mode);
-
-    /**
      * Sets the glyph (character) used to render points or primitives.
      *
      * @param value The character to use for rendering.
