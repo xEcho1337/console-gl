@@ -7,7 +7,7 @@ import net.echo.consolegl.input.Key;
 
 public class TestWindow {
 
-    public static final char[] GLYPHS = {'.', 'o', 'O', '@', '#'};
+    public static final char[] GLYPHS = ".,-:;=!*#$@".toCharArray();
 
     public static void main(String[] args) throws Exception {
         new TestWindow().start();
@@ -23,10 +23,14 @@ public class TestWindow {
     }
 
     private void spinningDonut(Display display) {
-        double A = 0, B = 0;
         int R1 = 10, R2 = 20, K2 = 30;
-        double K1 = display.getWidth() * K2 * 3.0 / (8.0 * (R1 + R2));
         int distanceFromCamera = 50;
+
+        double A = 0;
+        double B = 0;
+
+        double Ky = display.getWidth() * K2 * 3.0 / (8.0 * (R1 + R2));
+        double Kx = Ky * 2;
 
         int width = display.getWidth();
         int height = display.getHeight();
@@ -52,7 +56,6 @@ public class TestWindow {
                         zBuffer[y][x] = 0;
                     }
                 }
-
                 try (RenderStack stack = buffer.newStack(CGL.POINTS)) {
                     for (double theta = 0; theta < 2 * Math.PI; theta += 0.07) {
                         for (double phi = 0; phi < 2 * Math.PI; phi += 0.02) {
@@ -67,8 +70,8 @@ public class TestWindow {
                             double z = K2 + Math.cos(A) * circleX * sinPhi + circleY * Math.sin(A);
                             double ooz = 1 / (z + distanceFromCamera);
 
-                            int xp = (int) (width / 2.0 + K1 * ooz * x);
-                            int yp = (int) (height / 2.0 - K1 * ooz * y);
+                            int xp = (int) (width / 2.0 + Kx * ooz * x);
+                            int yp = (int) (height / 2.0 - Ky * ooz * y);
 
                             double L = cosPhi * cosTheta * Math.sin(B) - Math.cos(A) * cosTheta * sinPhi - Math.sin(A) * sinTheta + Math.cos(B) * (Math.cos(A) * sinTheta - cosTheta * Math.sin(A) * sinPhi);
                             int luminanceIndex = (int) (8 * Math.max(L, 0));
