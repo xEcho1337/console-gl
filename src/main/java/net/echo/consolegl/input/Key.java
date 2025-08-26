@@ -55,7 +55,7 @@ public enum Key {
             case '\n' -> Key.ENTER;
             case '\b' -> Key.BACKSPACE;
             case '\t' -> Key.TAB;
-            case 127 -> Key.ESCAPE;
+            case 27 -> Key.ESCAPE;
             default -> Key.UNKNOWN;
         };
     }

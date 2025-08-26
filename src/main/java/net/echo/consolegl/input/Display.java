@@ -85,11 +85,11 @@ public class Display {
     public String getTitle() {
         return title;
     }
-    
+
     public void setTitle(String title) {
         setTitle(title, System.out);
     }
-    
+
     public void setTitle(String title, PrintStream out) {
         this.title = title;
         out.print("\033]0;" + title + "\007");
