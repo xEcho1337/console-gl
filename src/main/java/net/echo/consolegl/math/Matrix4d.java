@@ -1,17 +1,17 @@
-package net.echo.consolegl.model;
+package net.echo.consolegl.math;
 
-import net.echo.consolegl.api.IMatrix4;
+import net.echo.consolegl.api.Matrix4;
 
-public class Matrix4 implements IMatrix4 {
+public class Matrix4d implements Matrix4 {
 
     private final double[][] values;
 
-    public Matrix4() {
+    public Matrix4d() {
         this.values = new double[4][4];
     }
 
-    public static Matrix4 identity() {
-        Matrix4 mat = new Matrix4();
+    public static Matrix4d identity() {
+        Matrix4d mat = new Matrix4d();
 
         for (int i = 0; i < 4; i++) {
             mat.values[i][i] = 1;
@@ -21,8 +21,8 @@ public class Matrix4 implements IMatrix4 {
     }
 
     @Override
-    public IMatrix4 copy() {
-        Matrix4 mat = new Matrix4();
+    public Matrix4 copy() {
+        Matrix4d mat = new Matrix4d();
 
         for (int i = 0; i < 4; i++) {
             System.arraycopy(this.values[i], 0, mat.values[i], 0, 4);
@@ -32,8 +32,8 @@ public class Matrix4 implements IMatrix4 {
     }
 
     @Override
-    public Matrix4 multiply(Matrix4 other) {
-        Matrix4 result = new Matrix4();
+    public Matrix4d multiply(Matrix4d other) {
+        Matrix4d result = new Matrix4d();
 
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 4; col++) {
@@ -68,7 +68,7 @@ public class Matrix4 implements IMatrix4 {
 
     @Override
     public void translate(double tx, double ty, double tz) {
-        Matrix4 t = identity();
+        Matrix4d t = identity();
         t.values[0][3] = tx;
         t.values[1][3] = ty;
         t.values[2][3] = tz;
@@ -77,7 +77,7 @@ public class Matrix4 implements IMatrix4 {
 
     @Override
     public void scale(double sx, double sy, double sz) {
-        Matrix4 s = identity();
+        Matrix4d s = identity();
         s.values[0][0] = sx;
         s.values[1][1] = sy;
         s.values[2][2] = sz;
@@ -88,7 +88,7 @@ public class Matrix4 implements IMatrix4 {
     public void rotateX(double angle) {
         double cos = Math.cos(angle);
         double sin = Math.sin(angle);
-        Matrix4 r = identity();
+        Matrix4d r = identity();
 
         r.values[1][1] = cos;
         r.values[1][2] = -sin;
@@ -102,7 +102,7 @@ public class Matrix4 implements IMatrix4 {
     public void rotateY(double angle) {
         double cos = Math.cos(angle);
         double sin = Math.sin(angle);
-        Matrix4 r = identity();
+        Matrix4d r = identity();
 
         r.values[0][0] = cos;
         r.values[0][2] = sin;
@@ -116,7 +116,7 @@ public class Matrix4 implements IMatrix4 {
     public void rotateZ(double angle) {
         double cos = Math.cos(angle);
         double sin = Math.sin(angle);
-        Matrix4 r = identity();
+        Matrix4d r = identity();
 
         r.values[0][0] = cos;
         r.values[0][1] = -sin;
@@ -127,7 +127,7 @@ public class Matrix4 implements IMatrix4 {
     }
 
     @Override
-    public void set(Matrix4 other) {
+    public void set(Matrix4d other) {
         for (int i = 0; i < 4; i++) {
             System.arraycopy(other.values[i], 0, values[i], 0, 4);
         }

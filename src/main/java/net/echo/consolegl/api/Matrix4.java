@@ -1,7 +1,7 @@
 package net.echo.consolegl.api;
 
-import net.echo.consolegl.model.Matrix4;
-import net.echo.consolegl.model.Vertex3D;
+import net.echo.consolegl.math.Matrix4d;
+import net.echo.consolegl.math.Vertex3D;
 
 /**
  * Represents a 4x4 transformation matrix for 3D operations.
@@ -10,14 +10,14 @@ import net.echo.consolegl.model.Vertex3D;
  * including translation, scaling, rotation, and vertex transformation.
  * Implementations should provide efficient and consistent matrix operations suitable for 3D rendering.
  */
-public interface IMatrix4 {
+public interface Matrix4 {
 
     /**
      * Creates a copy of this matrix.
      *
      * @return a new IMatrix4 instance with the same values as this matrix.
      */
-    IMatrix4 copy();
+    Matrix4 copy();
 
     /**
      * Multiplies this matrix by another matrix.
@@ -25,7 +25,7 @@ public interface IMatrix4 {
      * @param other the matrix to multiply with.
      * @return the result of the multiplication as a new Matrix4 object.
      */
-    Matrix4 multiply(Matrix4 other);
+    Matrix4d multiply(Matrix4d other);
 
     /**
      * Transforms a 3D vertex using this matrix.
@@ -79,5 +79,5 @@ public interface IMatrix4 {
      *
      * @param other the matrix whose values will be copied.
      */
-    void set(Matrix4 other);
+    void set(Matrix4d other);
 }

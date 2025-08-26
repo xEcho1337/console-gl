@@ -7,7 +7,7 @@ import java.awt.*;
  * matrix and drawing stack. Allows pushing/popping matrices, setting
  * colors and glyphs, and issuing 2D/3D vertex commands.
  */
-public interface IRenderStack {
+public interface RenderStack extends AutoCloseable {
 
     /**
      * Pushes the current transformation matrix onto the stack.
@@ -101,4 +101,7 @@ public interface IRenderStack {
      * @param angle Rotation angle in radians
      */
     void rotateZ(double angle);
+
+    @Override
+    void close();
 }

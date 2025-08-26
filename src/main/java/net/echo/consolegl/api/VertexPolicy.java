@@ -1,4 +1,4 @@
-package net.echo.consolegl.model;
+package net.echo.consolegl.api;
 
 public enum VertexPolicy {
     ERROR, // throw exception

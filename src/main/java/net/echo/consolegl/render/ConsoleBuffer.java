@@ -1,7 +1,7 @@
 package net.echo.consolegl.render;
 
 import net.echo.consolegl.CGL;
-import net.echo.consolegl.model.Pixel;
+import net.echo.consolegl.math.Pixel;
 
 import java.awt.*;
 import java.io.PrintStream;
@@ -80,8 +80,8 @@ public class ConsoleBuffer {
         out.println(text);
     }
 
-    public RenderStack newStack(int mode) {
-        return new RenderStack(this, mode, width, height);
+    public GLRenderStack newStack(int mode) {
+        return new GLRenderStack(this, mode, width, height);
     }
 
     public void clear() {

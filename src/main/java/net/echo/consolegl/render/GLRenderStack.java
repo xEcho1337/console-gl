@@ -1,9 +1,9 @@
 package net.echo.consolegl.render;
 
 import net.echo.consolegl.CGL;
-import net.echo.consolegl.api.IMatrix4;
-import net.echo.consolegl.api.IRenderStack;
-import net.echo.consolegl.model.*;
+import net.echo.consolegl.api.Matrix4;
+import net.echo.consolegl.api.RenderStack;
+import net.echo.consolegl.math.*;
 
 import java.awt.*;
 import java.util.ArrayDeque;
@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class RenderStack implements AutoCloseable, IRenderStack {
+public class GLRenderStack implements RenderStack {
 
-    private final Deque<IMatrix4> transformStack = new ArrayDeque<>();
+    private final Deque<Matrix4> transformStack = new ArrayDeque<>();
     private final List<Vertex2D> vertices;
     private final ConsoleBuffer buffer;
     private final int drawMode;
@@ -23,13 +23,13 @@ public class RenderStack implements AutoCloseable, IRenderStack {
     private char glyph = CGL.GLYPHS[4];
     private Color color = Color.WHITE;
 
-    public RenderStack(ConsoleBuffer buffer, int mode, int width, int height) {
+    public GLRenderStack(ConsoleBuffer buffer, int mode, int width, int height) {
         this.buffer = buffer;
         this.drawMode = mode;
         this.width = width;
         this.height = height;
         this.vertices = new ArrayList<>();
-        transformStack.push(Matrix4.identity());
+        transformStack.push(Matrix4d.identity());
     }
 
     @Override
@@ -66,13 +66,16 @@ public class RenderStack implements AutoCloseable, IRenderStack {
         int scaledWidth = (int) (x * width);
         int scaledHeight = (int) (y * height);
         
-        if (scaledWidth >= width || x < 0 || scaledHeight >= height || y < 0) {
+        if (scaledWidth > width || x < 0 || scaledHeight > height || y < 0) {
             switch (CGL.getVertexPolicy()) {
                 case ERROR -> throw new IllegalArgumentException("X and Y must be between 0 and 1! Got " + x + ", " + y);
                 case IGNORE -> { return; }
             }
         }
-        
+
+        scaledWidth = Math.clamp(scaledWidth, 0, width - 1);
+        scaledHeight = Math.clamp(scaledHeight, 0, height - 1);
+
         vertices.add(new Vertex2D(scaledWidth, scaledHeight, glyph, color));
     }
 
@@ -126,6 +129,8 @@ public class RenderStack implements AutoCloseable, IRenderStack {
             throw new IllegalStateException("Unable to end draw, mode has not been set!");
         }
 
+        if (vertices.isEmpty()) return;
+
         Pixel[][] arrayBuffer = buffer.getBuffer();
 
         switch (drawMode) {
@@ -136,7 +141,7 @@ public class RenderStack implements AutoCloseable, IRenderStack {
                     pixel.setColor(vertex2D.color());
                 }
             }
-            case CGL.LINES -> { // LINES
+            case CGL.LINES -> {
                 for (int i = 0; i < vertices.size(); i += 2) {
                     Vertex2D a = vertices.get(i);
                     Vertex2D b = vertices.get(i + 1);

@@ -2,22 +2,15 @@ package net.echo.consolegl.input;
 
 import net.echo.consolegl.render.ConsoleBuffer;
 
-import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayDeque;
-import java.util.Queue;
 
 public class Display {
 
     private final int width;
     private final int height;
     private final ConsoleBuffer frameBuffer;
-    private final Queue<Key> queue;
 
-    private Key lastPressedKey = Key.UNKNOWN;
-    private Key pressedKey = Key.UNKNOWN;
-
-    private Thread inputRegister;
+    private InputRegister inputRegister;
     private String title;
     private boolean active;
 
@@ -25,41 +18,30 @@ public class Display {
         this.width = width;
         this.height = height;
         this.frameBuffer = new ConsoleBuffer(width, height);
-        this.queue = new ArrayDeque<>();
     }
 
-    public void create() throws IOException, InterruptedException {
-        String[] cmd = {"/bin/sh", "-c", "stty raw </dev/tty"};
-        Runtime.getRuntime().exec(cmd).waitFor();
-
+    public void create(InputRegister inputRegister) {
         this.active = true;
-        this.inputRegister = new Thread(() -> {
-            while (active) {
-                try {
-                    byte[] inputBuffer = new byte[1];
-                    System.in.read(inputBuffer, 0, inputBuffer.length);
+        this.inputRegister = inputRegister;
 
-                    char keyCode = (char) inputBuffer[0];
-                    queue.add(Key.fromChar(keyCode));
-                } catch (IOException e) {
-                    e.printStackTrace(System.err);
-                }
-            }
-        });
-
-        inputRegister.start();
+        inputRegister.register();
     }
 
     public void pollEvents() {
-        if (queue.isEmpty()) return;
-
-        pressedKey = queue.poll();
-        lastPressedKey = pressedKey;
+        inputRegister.pollEvents();
     }
 
     public void update(PrintStream out) {
         frameBuffer.render(out);
-        pressedKey = Key.UNKNOWN;
+    }
+
+    public void setTitle(String title) {
+        setTitle(title, System.out);
+    }
+
+    public void setTitle(String title, PrintStream out) {
+        this.title = title;
+        out.print("\033]0;" + title + "\007");
     }
 
     public int getWidth() {
@@ -74,33 +56,16 @@ public class Display {
         return frameBuffer;
     }
 
-    public Thread getInputRegister() {
+    public InputRegister getInputRegister() {
         return inputRegister;
     }
 
-    public void setInputRegister(Thread inputRegister) {
+    public void setInputRegister(InputRegister inputRegister) {
         this.inputRegister = inputRegister;
     }
 
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        setTitle(title, System.out);
-    }
-
-    public void setTitle(String title, PrintStream out) {
-        this.title = title;
-        out.print("\033]0;" + title + "\007");
-    }
-
-    public Key getLastPressedKey() {
-        return lastPressedKey;
-    }
-
-    public Key getPressedKey() {
-        return pressedKey;
     }
 
     public boolean isActive() {

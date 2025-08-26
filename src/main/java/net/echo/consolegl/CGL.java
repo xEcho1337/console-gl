@@ -1,9 +1,9 @@
 package net.echo.consolegl;
 
-import net.echo.consolegl.model.Pixel;
-import net.echo.consolegl.model.Vertex2D;
-import net.echo.consolegl.model.Vertex3D;
-import net.echo.consolegl.model.VertexPolicy;
+import net.echo.consolegl.math.Pixel;
+import net.echo.consolegl.math.Vertex2D;
+import net.echo.consolegl.math.Vertex3D;
+import net.echo.consolegl.api.VertexPolicy;
 
 import java.util.stream.IntStream;
 
