@@ -2,9 +2,19 @@ package net.echo.consolegl.input;
 
 import net.echo.consolegl.render.ConsoleBuffer;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 
 public class Display {
+
+    public record Size(int width, int height) {
+        @Override
+        public String toString() {
+            return "(" + width + ", " + height + ")";
+        }
+    }
 
     private final int width;
     private final int height;
@@ -25,6 +35,24 @@ public class Display {
         this.inputRegister = inputRegister;
 
         inputRegister.register();
+    }
+
+    public Size getTerminalSize() throws IOException {
+        Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", "stty size </dev/tty"});
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+            String line = br.readLine();
+
+            if (line != null) {
+                String[] parts = line.split(" ");
+                int rows = Integer.parseInt(parts[0]);
+                int cols = Integer.parseInt(parts[1]);
+
+                return new Size(rows, cols);
+            }
+        }
+
+        throw new IllegalStateException("Cannot get terminal size");
     }
 
     public void pollEvents() {
