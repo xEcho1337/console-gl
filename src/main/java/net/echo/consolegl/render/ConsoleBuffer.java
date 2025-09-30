@@ -66,7 +66,7 @@ public class ConsoleBuffer {
                 sb.append(pixel.getGlyph());
                 sb.append(CGL.RESET);
             }
-            sb.append("\r\n");
+            sb.append("\n\r");
         }
 
         return sb.toString();
